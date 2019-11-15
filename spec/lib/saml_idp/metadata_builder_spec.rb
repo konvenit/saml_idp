@@ -9,9 +9,28 @@ module SamlIdp
       expect(Saml::XML::Document.parse(subject.signed).valid_signature?(Default::FINGERPRINT)).to be_truthy
     end
 
-    it "includes logout element" do
-      subject.configurator.single_logout_service_post_location = 'https://example.com/saml/logout'
-      expect(subject.fresh).to match('<SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://example.com/saml/logout"/>')
+    describe "SingleSignOnService" do
+      before { subject.configurator.single_service_post_location = 'https://example.com/saml/auth' }
+
+      it "allows signing in via Redirect" do
+        expect(subject.fresh).to match('<SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://example.com/saml/auth"/>')
+      end
+
+      it "allows signing in via POST" do
+        expect(subject.fresh).to match('<SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://example.com/saml/auth"/>')
+      end
+    end
+
+    describe "SingleLogoutService" do
+      before { subject.configurator.single_logout_service_post_location = 'https://example.com/saml/logout' }
+
+      it "allows signing out via Redirect" do
+        expect(subject.fresh).to match('<SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://example.com/saml/logout"/>')
+      end
+
+      it "allows signing out via POST" do
+        expect(subject.fresh).to match('<SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://example.com/saml/logout"/>')
+      end
     end
 
     context "technical contact" do
