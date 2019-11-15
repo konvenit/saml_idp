@@ -24,14 +24,20 @@ module SamlIdp
 
             entity.IDPSSODescriptor protocolSupportEnumeration: protocol_enumeration do |descriptor|
               build_key_descriptor descriptor
+              build_name_id_formats descriptor
+              build_attribute descriptor
+
               descriptor.SingleLogoutService Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
                 Location: single_logout_service_post_location
               descriptor.SingleLogoutService Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
                 Location: single_logout_service_redirect_location
-              build_name_id_formats descriptor
+
+              # Note that order is significant for service provider that support multiple bindings per service.
+              # For SingleSignOn, HTTP-Redirect is usually preferred over HTTP-POST.
               descriptor.SingleSignOnService Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
                 Location: single_service_post_location
-              build_attribute descriptor
+              descriptor.SingleSignOnService Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+                Location: single_service_post_location
             end
 
             entity.AttributeAuthorityDescriptor protocolSupportEnumeration: protocol_enumeration do |authority_descriptor|
