@@ -50,5 +50,12 @@ module RailsApp
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
     # config.active_record.whitelist_attributes = true
+
+    if Rails::VERSION::MAJOR >= 6
+      # Rails 6 includes a middleware to avoid DNS rebinding attacks that causes some tests to fail.
+      # We don't require that security feature for our tests' Rails apps, so we simply disable it.
+      # Also see https://api.rubyonrails.org/v6.0.1/classes/ActionDispatch/HostAuthorization.html
+      config.hosts.clear
+    end
   end
 end
