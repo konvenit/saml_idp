@@ -8,6 +8,12 @@ module SamlIdp
       self.saml_request_id = saml_request_id
     end
 
+    private
+
+    def encode
+      Base64.strict_encode64(signed)
+    end
+
     def build
       builder = Builder::XmlMarkup.new
       builder.LogoutResponse ID: response_id_string,
@@ -23,6 +29,5 @@ module SamlIdp
           end
         end
     end
-    private :build
   end
 end

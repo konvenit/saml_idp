@@ -48,8 +48,12 @@ describe SamlIdp::Controller do
         expect(validate_saml_request).to eq(true)
       end
 
-      it "should create a SAML Response" do
+      it "should create a base64-encoded SAML Response" do
         saml_response = encode_response(principal)
+
+        expect(saml_response).to_not include('<')
+        expect(Base64.decode64(saml_response)).to include('<')
+
         response = OneLogin::RubySaml::Response.new(saml_response)
         expect(response.name_id).to eq("foo@example.com")
         expect(response.issuers.first).to eq("http://example.com")
@@ -57,11 +61,15 @@ describe SamlIdp::Controller do
         expect(response.is_valid?).to be_truthy
       end
 
-      it "should create a SAML Logout Response" do
+      it "should create a base64-encoded SAML Logout Response" do
         params[:SAMLRequest] = make_saml_logout_request
         expect(validate_saml_request).to eq(true)
         expect(saml_request.logout_request?).to eq true
         saml_response = encode_response(principal)
+
+        expect(saml_response).to_not include('<')
+        expect(Base64.decode64(saml_response)).to include('<')
+
         response = OneLogin::RubySaml::Logoutresponse.new(saml_response, saml_settings)
         expect(response.validate).to eq(true)
         expect(response.issuer).to eq("http://example.com")
