@@ -86,7 +86,7 @@ module SamlIdp
         saml_logout_url,
         saml_request_id,
         (opts[:algorithm] || algorithm || default_algorithm)
-      ).signed
+      ).encoded
     end
 
     def encode_response(principal, opts = {})
