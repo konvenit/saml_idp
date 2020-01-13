@@ -137,6 +137,10 @@ module SamlIdp
       @_name_id ||= xpath("//saml:NameID", saml: assertion).first.try(:content)
     end
 
+    def requested_name_id_format
+      @_requested_name_id_format ||= xpath("//samlp:NameIDPolicy", samlp: samlp).first.try(:attr, "Format")
+    end
+
     def session_index
       @_session_index ||= xpath("//samlp:SessionIndex", samlp: samlp).first.try(:content)
     end
